@@ -102,7 +102,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Detects faces in the given image.')
     parser.add_argument(
-        '/Users/rebeccazeng/Desktop/angry-face.jpeg', help='the image you\'d like to detect faces in.')
+        'input_image', help='the image you\'d like to detect faces in.')
     parser.add_argument(
         '--out', dest='output', default='out.jpg',
         help='the name of the output file.')
