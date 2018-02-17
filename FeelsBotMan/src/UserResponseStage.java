@@ -6,11 +6,19 @@ public class UserResponseStage {
 
 	}
 
-	public static void collectUserResponse() {
+	public static void collectUserSpeechResponse() {
 		
 	}
 	
-	public static void evaluateUserResponse() {
+	public static void collectUserVisualResponse() {
+		
+	}
+	
+	public static void evaluateUserSpeechResponse() {
+		
+	}
+	
+	public static void evaluateUserVisualResponse() {
 		
 	}
 	

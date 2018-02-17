@@ -1,0 +1,5 @@
+package curriculum;
+
+interface DiscreteTrialInterface {
+
+}
