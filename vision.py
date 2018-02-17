@@ -1,21 +1,22 @@
-from google.cloud import vision
-client = vision.ImageAnnotatorClient()
+# from google.cloud import vision
+# client = vision.ImageAnnotatorClient()
 
-#!/usr/bin/env python
 
-# Copyright 2015 Google, Inc
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# #!/usr/bin/env python
+
+# # Copyright 2015 Google, Inc
+# #
+# # Licensed under the Apache License, Version 2.0 (the "License");
+# # you may not use this file except in compliance with the License.
+# # You may obtain a copy of the License at
+# #
+# #     http://www.apache.org/licenses/LICENSE-2.0
+# #
+# # Unless required by applicable law or agreed to in writing, software
+# # distributed under the License is distributed on an "AS IS" BASIS,
+# # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# # See the License for the specific language governing permissions and
+# # limitations under the License.
 
 """Draws squares around detected faces in the given image."""
 
@@ -27,6 +28,17 @@ from google.cloud import vision
 from google.cloud.vision import types
 from PIL import Image, ImageDraw
 
+def explicit():
+    from google.cloud import storage
+
+    # Explicitly use service account credentials by specifying the private key
+    # file.
+    storage_client = storage.Client.from_service_account_json(
+        '/Users/rebeccazeng/Desktop/Projects/feelsbot.json')
+
+    # Make an authenticated API request
+    buckets = list(storage_client.list_buckets())
+    print(buckets)
 
 # [START def_detect_face]
 def detect_face(face_file, max_results=4):
@@ -90,7 +102,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Detects faces in the given image.')
     parser.add_argument(
-        'input_image', help='the image you\'d like to detect faces in.')
+        '/Users/rebeccazeng/Desktop/angry-face.jpeg', help='the image you\'d like to detect faces in.')
     parser.add_argument(
         '--out', dest='output', default='out.jpg',
         help='the name of the output file.')
