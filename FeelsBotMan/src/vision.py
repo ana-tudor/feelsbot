@@ -129,6 +129,7 @@ def detect_faces(path):
         # print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
         # print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
         # print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
+    print(data)
     return data
 
 # print(detect_faces("angry-face.jpeg"))
