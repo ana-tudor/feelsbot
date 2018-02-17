@@ -44,6 +44,10 @@ def main():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit(0)
+        if pygame.mouse.get_pressed()[0]:
+            print("this is when the video feed starts")
+        if pygame.mouse.get_pressed()[0]:
+            print("this is when the video feed ends")
 
         # Calling the 'my_group.update' function calls the 'update' function of all 
         # its member sprites. Calling the 'my_group.draw' function uses the 'image'
