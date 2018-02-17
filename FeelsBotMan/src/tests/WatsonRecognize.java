@@ -1,3 +1,8 @@
+package tests;
+
+
+import java.util.ArrayList;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -32,6 +37,7 @@ public class WatsonRecognize {
 		line.start();
 
 		AudioInputStream audio = new AudioInputStream(line);
+		ArrayList<SpeechResults> results = new ArrayList();
 		
 		RecognizeOptions options = new RecognizeOptions.Builder()
 		  .interimResults(true)
@@ -42,6 +48,7 @@ public class WatsonRecognize {
 		service.recognizeUsingWebSocket(audio, options, new BaseRecognizeCallback() {
 		  @Override
 		  public void onTranscription(SpeechResults speechResults) {
+			results.add(speechResults);
 		    System.out.println(speechResults);
 		  }
 		});
@@ -52,6 +59,9 @@ public class WatsonRecognize {
 		// closing the WebSockets underlying InputStream will close the WebSocket itself.
 		line.stop();
 		line.close();
+		for(int i = 0; i < results.size(); i++) {
+			System.out.println(results.get(i).getResults());
+		}
 
 		System.out.println("Fin.");
 	}
