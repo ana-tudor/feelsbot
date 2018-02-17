@@ -1,11 +1,15 @@
 import cv2
+import os
+
 print(cv2.__version__)
-vidcap = cv2.VideoCapture('big_buck_bunny_720p_5mb.mp4')
+vidcap = cv2.VideoCapture('meanwhile.mp4')
 success,image = vidcap.read()
 count = 0
 success = True
 while success:
+  pics = []
   success,image = vidcap.read()
-  print 'Read a new frame: ', success
-  cv2.imwrite("frame%d.jpg" % count, image)     # save frame as JPEG file
+  path = '/Users/rebeccazeng/Desktop/Projects/feelsbot/pics'
+  print('Read a new frame: ', success)
+  cv2.imwrite(os.path.join(path, ("frame%d.jpg" % count)), image)     # save frame as JPEG file
   count += 1
