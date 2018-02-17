@@ -38,23 +38,28 @@ def main():
 
     my_sprite = TestSprite()
     my_group = pygame.sprite.Group(my_sprite)
-
+    vid_on = False
     while True:
-        event = pygame.event.poll()
+        my_group.update()
+        my_group.draw(screen)
+        pygame.display.flip()
+        event = pygame.event.wait()
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit(0)
-        if pygame.mouse.get_pressed()[0]:
+        if pygame.mouse.get_pressed()[0] and vid_on == False:
             print("this is when the video feed starts")
-        if pygame.mouse.get_pressed()[0]:
+            vid_on = True   
+            # this is when we start taking in video
+        if pygame.mouse.get_pressed()[2] and vid_on == True:
             print("this is when the video feed ends")
+            vid_on = False
+            # this is when we need to stop taking in video
 
         # Calling the 'my_group.update' function calls the 'update' function of all 
         # its member sprites. Calling the 'my_group.draw' function uses the 'image'
         # and 'rect' attributes of its member sprites to draw the sprite.
-        my_group.update()
-        my_group.draw(screen)
-        pygame.display.flip()
+
 
 if __name__ == '__main__':
     main()
