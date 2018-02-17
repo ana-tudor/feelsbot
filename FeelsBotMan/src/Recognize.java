@@ -43,23 +43,27 @@ import java.util.List;
 
 public class Recognize {
   public static void main(String... args) throws Exception {
-    if (args.length < 1) {
-      System.out.println("Usage:");
-      System.out.printf(
-          "\tjava %s \"<command>\" \"<path-to-image>\"\n"
-          + "Commands:\n"
-          + "\tsyncrecognize | asyncrecognize | streamrecognize | wordoffsets\n"
-          + "Path:\n\tA file path (ex: ./resources/audio.raw) or a URI "
-          + "for a Cloud Storage resource (gs://...)\n",
-          Recognize.class.getCanonicalName());
-      return;
-    }
-    String command = args[0];
-    String path = args.length > 1 ? args[1] : "";
+//    if (args.length < 1) {
+//      System.out.println("Usage:");
+//      System.out.printf(
+//          "\tjava %s \"<command>\" \"<path-to-image>\"\n"
+//          + "Commands:\n"
+//          + "\tsyncrecognize | asyncrecognize | streamrecognize | wordoffsets\n"
+//          + "Path:\n\tA file path (ex: ./resources/audio.raw) or a URI "
+//          + "for a Cloud Storage resource (gs://...)\n",
+//          Recognize.class.getCanonicalName());
+//      return;
+//    }
+	  
+	  
+    String command = "syncrecognize";
+//    String path = args.length > 1 ? args[1] : "";
+    String path = "C:/Users/hp/Downloads/Malfoy.wav";
 
     // Use command and GCS path pattern to invoke transcription.
     if (command.equals("syncrecognize")) {
       if (path.startsWith("gs://")) {
+    	System.out.println("run");
         syncRecognizeGcs(path);
       } else {
         syncRecognizeFile(path);
@@ -98,7 +102,7 @@ public class Recognize {
     RecognitionConfig config = RecognitionConfig.newBuilder()
         .setEncoding(AudioEncoding.LINEAR16)
         .setLanguageCode("en-US")
-        .setSampleRateHertz(16000)
+        .setSampleRateHertz(44100)
         .build();
     RecognitionAudio audio = RecognitionAudio.newBuilder()
         .setContent(audioBytes)

@@ -39,5 +39,10 @@
   		<artifactId>google-cloud-language</artifactId>
   		<version>1.14.0</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.ibm.watson.developer_cloud</groupId>
+  		<artifactId>speech-to-text</artifactId>
+  		<version>4.2.1</version>
+  	</dependency>
   </dependencies>
 </project>
