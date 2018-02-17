@@ -23,6 +23,7 @@
 import argparse
 import io
 import time
+import glob
 
 # [START import_client_library]
 from google.cloud import vision
@@ -130,8 +131,9 @@ def detect_faces(path):
         # print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
     return data
 
-print(detect_faces("angry-face.jpeg"))
+# print(detect_faces("angry-face.jpeg"))
+video_pics = glob.glob('pics/*.jpg')
+for pic in video_pics:
+     detect_faces(pic)
 
-# for pic in video_pics:
-#     detect_faces(pic)
 
