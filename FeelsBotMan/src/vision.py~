@@ -130,7 +130,6 @@ def detect_faces(path):
         # print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
         # print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
     print(data)
-    printer(data)
     return data
 def printer(data):
     # really shouldn't need this but idk

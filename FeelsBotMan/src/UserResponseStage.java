@@ -1,9 +1,9 @@
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import com.github.sarxos.webcam.Webcam;
-import feelsbot.vision;
 
 public class UserResponseStage {
 
@@ -37,6 +37,10 @@ public class UserResponseStage {
 		catch (IOException e) {
 			// idk really what to do so we can just print the shrug emoji and hope this never gets executed
 			System.out.println("whoops \\u00AF\\\\_(\\u30C4)_/\\u00AF");
+		}
+		
+		try {
+			Process p = Runtime.getRuntime().exec("python vision.py");
 		}
 		
 		
