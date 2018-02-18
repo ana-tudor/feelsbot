@@ -113,6 +113,8 @@ public class UserResponseStage {
 		double totalScore = 0;
 		double totalMag = 0;
 		String keyWord = "";
+		
+		System.out.println("Results in UserResponse class:" + results);
 
 		for (String text : results) {
 			try {
@@ -127,15 +129,10 @@ public class UserResponseStage {
 
 				totalScore += sentiment.getScore();
 				totalMag += sentiment.getMagnitude();
-				
-				if(response.getEntitiesCount() == 0) {
-					keyWord = "";
-				} else {
-					keyWord = response.getEntitiesList().get(0).getName();
+				keyWord = response.getEntitiesList().get(0).getName();
 
-				}
-				
 			} catch (Exception e) {
+				System.out.println("file was not read. possibly bc null?");
 				System.out.println(results);
 				System.out.println(e + "\n");
 			}
@@ -183,5 +180,4 @@ public class UserResponseStage {
 	public static void evaluateUserVisualResponse() {
 
 	}
-
 }

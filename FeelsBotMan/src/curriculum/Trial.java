@@ -67,6 +67,7 @@ public class Trial {
 	public void pause(double time) throws InterruptedException {
 		Thread.sleep(10 * 1000);
 	}
+
 	
 	private boolean in(String element, ArrayList<String> set) {
 		for(String str:set) {
@@ -76,5 +77,6 @@ public class Trial {
 		}
 		return false;
 	}
+
 
 }
