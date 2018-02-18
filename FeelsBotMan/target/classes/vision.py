@@ -1,29 +1,12 @@
 # from google.cloud import vision
 # client = vision.ImageAnnotatorClient()
 
-
-# #!/usr/bin/env python
-
-# # Copyright 2015 Google, Inc
-# #
-# # Licensed under the Apache License, Version 2.0 (the "License");
-# # you may not use this file except in compliance with the License.
-# # You may obtain a copy of the License at
-# #
-# #     http://www.apache.org/licenses/LICENSE-2.0
-# #
-# # Unless required by applicable law or agreed to in writing, software
-# # distributed under the License is distributed on an "AS IS" BASIS,
-# # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# # See the License for the specific language governing permissions and
-# # limitations under the License.
-
-"""Draws squares around detected faces in the given image."""
-
 import argparse
 import io
 import time
 import glob
+import cv2
+import sys
 
 # [START import_client_library]
 from google.cloud import vision
@@ -31,6 +14,22 @@ from google.cloud import vision
 from google.cloud.vision import types
 from PIL import Image, ImageDraw
 
+"""Trying to take pictures"""
+
+import numpy as np
+import cv2
+import subprocess
+
+
+cap = cv2.VideoCapture(0)
+
+ret, picFrame = cap.read()
+cv2.imwrite("/Users/rebeccazeng/Desktop/Projects/feelsbot/FeelsBotMan/src/pics/img"+str(time.time())+".png", picFrame)
+# cap.close()
+ret = cap.set(3,640)
+ret = cap.set(4,360)
+
+""""""
 
 # # [START def_detect_face]
 # def detect_face(face_file, max_results=4):
