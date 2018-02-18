@@ -31,13 +31,10 @@ class TestSprite(pygame.sprite.Sprite):
         self.images = []
         for filename in glob.glob('bears2/*.PNG'): #assuming png
             img = Image.open(filename)
-            print("does this work")
             surface = pygame.image.load(filename)
-            print("does this now work")
             self.images.append(surface)
-            print("hi")
         # self.images.append(pygame.image.load(img))
-        self.images.append(pygame.image.load('bears/bear1.png'))
+        # self.images.append(pygame.image.load('bears/bear1.png'))
         # self.images.append(pygame.image.load('bears/bear2.png'))
         # self.images.append(pygame.image.load('bears/bear3.png'))
         # self.images.append(pygame.image.load('bears/bear4.png'))
@@ -89,6 +86,12 @@ def main():
     update_screen(caption)
     started = 0;
 
+    def check_data(data_file):
+        file = open(data_file, "r")
+        return file
+    # display whatever is currently in the file
+    
+
     while True:
         if not started:
             event = pygame.event.wait()
@@ -100,14 +103,17 @@ def main():
                 caption = captions("started recording")
                 update_screen(caption)
                 started = 1;
+                time_start = clock.get_time()
+                print(time_start)
 
-            vid_on = False  
+        # vid_on = False  
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
         pygame.display.flip()
         update_screen(caption)
+    
 
 
 
