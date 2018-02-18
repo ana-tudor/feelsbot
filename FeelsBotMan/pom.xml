@@ -49,5 +49,10 @@
   		<artifactId>webcam-capture</artifactId>
   		<version>0.3.10</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.ibm.watson.developer_cloud</groupId>
+  		<artifactId>java-sdk</artifactId>
+  		<version>4.1.0</version>
+  	</dependency>
   </dependencies>
 </project>

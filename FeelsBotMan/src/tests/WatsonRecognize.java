@@ -14,6 +14,7 @@ import com.ibm.watson.developer_cloud.http.HttpMediaType;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.Transcript;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.websocket.BaseRecognizeCallback;
 
 public class WatsonRecognize {
@@ -59,8 +60,23 @@ public class WatsonRecognize {
 		// closing the WebSockets underlying InputStream will close the WebSocket itself.
 		line.stop();
 		line.close();
+		int prevIndex = 0;
 		for(int i = 0; i < results.size(); i++) {
+			if ((i != results.size() - 1) && (results.get(i + 1).getResultIndex() == results.get(i).getResultIndex())) {
+				results.remove(i);
+				results.trimToSize();
+				i--;
+			}
+		}
+		for( int i = 0; i < results.size(); i++) {
 			System.out.println(results.get(i).getResults());
+		}
+		
+		String[] stringResults = new String[results.size()];
+		
+		for(int i = 0; i < results.size(); i++) {
+			stringResults[i] = results.get(i).getResults().get(0).getAlternatives().get(0).getTranscript();
+			System.out.println(stringResults[i]);
 		}
 
 		System.out.println("Fin.");
