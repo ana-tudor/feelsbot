@@ -93,7 +93,7 @@ def main():
         read_files = file.readlines()
         file.close()
         return read_files
-    # print(type(check_data("start_or_end.txt")))
+    print(type(check_data("start_or_end.txt")))
     # display whatever is currently in the file
     
 
@@ -117,9 +117,11 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
         pygame.display.flip()
-        feeling = captions(check_data("start_or_end.txt"))
-        update_screen(caption, (100,100))
-        update_screen(feeling, (200,100))
+        input = str(check_data("start_or_end.txt"))
+        if input == [] or input 
+        feeling = captions("started recording")
+        screen.blit(feeling, (300,100))
+        update_screen(feeling, (100,100))
 
     
 
