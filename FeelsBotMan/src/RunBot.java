@@ -3,6 +3,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.*;
+import java.io.*;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -17,6 +18,7 @@ public class RunBot {
 	
 	// Set file path for bot speech text file
 	public static final String FILENAME = "bot_speech.txt";
+	public static final String face_analysis_txt = "face_analysis.txt";
 	
 	// [ START MAIN() ]
 	public static void main(String[] args) {
@@ -57,7 +59,14 @@ public class RunBot {
 			}
 			
 			// get analysis of user's facial expressions
-			ArrayList<Float> expressions = facialAnalysis();
+			float[] expressions = readFacialAnalysisScores(face_analysis_txt);
+			
+			// determine whether normal protocol can continue, or if special protocols (anger, anxiety) must be activated
+			String response_type = whichProtocol(expressions, speech_results);
+			
+			// take weighted average of facial expression scores and text analysis scores to get overall sentiment score
+			float score = reconcileScore(expressions, textSentiments(user_response));
+			
 			
 			
 			
@@ -122,6 +131,7 @@ public class RunBot {
 		return values;
 	}
 	
+	// [ START TEXTSENTIMENTS ]
 	public static ArrayList<Float> textSentiments(ArrayList<Object> user_response) {
 		ArrayList<Float> scores = new ArrayList<Float>();
 		user_response.get(1);
@@ -129,6 +139,112 @@ public class RunBot {
 		scores.add((float) user_response.get(0));
 		return scores;
 	}
+	// [ /END TEXTSENTIMENTS ]
+	
+	
+	// [ START RECONCILESCORES ]
+	public static Float reconcileScore(float[] facial_scores, ArrayList<Float> textSentiments) {
+		float anger = (float) (facial_scores[0] * -1.8);
+		float happiness = facial_scores[1];
+		float surprise = (float) (facial_scores[2] * -1.5);
+		
+		float text_score = textSentiments.get(1);
+		
+		float score = (anger + happiness + surprise + text_score) / 4;
+		
+		if (Math.abs(score) > 1) {
+			return (float) 0.99;
+		}
+		return score;
+		
+		
+		
+		
+	}
+	// [ /END RECONCILESCORES ]
+	
+	// [ START READ FACIAL ANALYSIS ]
+	public static float[] readFacialAnalysisScores(String pathName) {
+		/* Read in the floats from last line of facial_analysis.txt */
+		String line = null;
+		String last_line = null;
+		
+		try {
+			FileReader filereader = new FileReader(pathName);
+			
+			BufferedReader bufferedReader = new BufferedReader(filereader);
+			
+			while ((line = bufferedReader.readLine()) != null) {
+				last_line = line;
+			}
+			
+			bufferedReader.close();
+			
+		} catch (FileNotFoundException ex) {
+			System.out.println("File not found");
+		} catch (IOException e) {
+			System.out.println("Error reading file");
+		}
+		String[] parts = last_line.substring(1,last_line.length()).split(",");
+		float[] scores = new float[parts.length-1];
+		for (int i = 0; i < parts.length-1; i++) {
+			float number = Float.parseFloat(parts[i]);
+			float rounded = (int) Math.round(number*1000) / 1000f;
+			scores[i] = rounded;
+		}
+		return scores;
+	}
+	// [ /END READ FACIAL ANALYSIS ]
+	
+	// [ START READ FACIAL ANALYSIS KEYWORD ]
+	public static String readFacialAnalysisKey(String pathName) {
+		/* Read in the keyword from last line of facial_analysis.txt */
+		String line = null;
+		String last_line = null;
+		
+		try {
+			FileReader filereader = new FileReader(pathName);
+			
+			BufferedReader bufferedReader = new BufferedReader(filereader);
+			
+			while ((line = bufferedReader.readLine()) != null) {
+				last_line = line;
+			}
+			
+			bufferedReader.close();
+			
+		} catch (FileNotFoundException ex) {
+			System.out.println("File not found");
+		} catch (IOException e) {
+			System.out.println("Error reading file");
+		}
+		String[] words = last_line.substring(1,last_line.length()).split(",");
+		return words[words.length];
+	}
+	// [ /END READ FACIAL ANALYSIS KEYWORD ]
+	
+	// [ START WHICH PROTOCOL ]
+	public static String whichProtocol(float[] expressions, ArrayList<SpeechResults> speech_results) {
+		float anger = expressions[0];
+		float anxiety = expressions[2];
+		float threshold = (float) 0.6;
+		if (speech_results.length < 3) {
+			return "no";
+		} else if (anger > threshold && anger > anxiety) {
+			return "anger";
+		} else if (anger > threshold && anxiety >= anger) {
+			return "anxiety";
+		} else if (anxiety > threshold) {
+			return "anxiety";
+		} else if ((anger + anxiety + expressions[1])/3 < 0.1) {
+			// low enough average that the person may not have actually replied
+			return "no";
+		} else {
+			return "normal";
+		}
+	}
+	
+	// [ /END WHICH PROTOCOL ]
 	
 	// [ START TIME ]
 	public static long time() {
