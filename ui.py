@@ -23,6 +23,7 @@ def captions(label):
     # screen.blit(caption, (100,100))
     return caption_returned
 
+
 # [sprite]
 class TestSprite(pygame.sprite.Sprite):
     def __init__(self):
@@ -73,22 +74,26 @@ def main():
     bears_group = pygame.sprite.Group(my_bear)
     vid_on = False
     # initial caption
-    caption = captions("hello world")
+    caption = captions("Hello! Double click to begin recording.")
 
-    def update_screen(caption_blit):
+    def update_screen(caption_blit, coords):
         bears_group.update()
         bears_group.draw(screen)
         # pygame.display.flip()
-        screen.blit(caption_blit, (100,100))
+        screen.blit(caption_blit, coords)
         pygame.display.flip()
 
     # start with a picture of the bear
-    update_screen(caption)
+    update_screen(caption, (100,100))
     started = 0;
 
+    # checking the information passed in through a .txt file
     def check_data(data_file):
-        file = open(data_file, "r")
-        return file
+        file = open(data_file)
+        read_files = file.readlines()
+        file.close()
+        return read_files
+    # print(type(check_data("start_or_end.txt")))
     # display whatever is currently in the file
     
 
@@ -101,7 +106,7 @@ def main():
             # print("this is when the video feed starts")
                 write("start") # this writes to a txt file for the Java
                 caption = captions("started recording")
-                update_screen(caption)
+                update_screen(caption, (100,100))
                 started = 1;
                 time_start = clock.get_time()
                 print(time_start)
@@ -112,7 +117,10 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
         pygame.display.flip()
-        update_screen(caption)
+        feeling = captions(check_data("start_or_end.txt"))
+        update_screen(caption, (100,100))
+        update_screen(feeling, (200,100))
+
     
 
 
