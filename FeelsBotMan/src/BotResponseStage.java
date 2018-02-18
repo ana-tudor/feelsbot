@@ -44,7 +44,8 @@ public class BotResponseStage {
 			"What was that?", 
 			"Can you say that again?",
 			"Try again please.",
-			"Try using your words :)"};
+			"Try using your words :)",
+			"I couldn't hear you"};
 	
 	private static double[] anxietyRespWeights = new double[anxietyResponses.length];
 	private static double[] angerRespWeights = new double[angerResponses.length];
