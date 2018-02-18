@@ -1,7 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
+import com.google.cloud.language.v1.Document.Type;
 
 public class BotResponseStage {
 	
@@ -56,36 +59,58 @@ public class BotResponseStage {
 		
 		for (int i = 0; i < anxietyRespWeights.length; i++) {
 			String text = anxietyResponses[i];
-			Sentiment sentiment = UserResponseStage.parseText(text);
+			Sentiment sentiment = parseText(text);
 			anxietyRespWeights[i] = sentiment.getScore();		      
 	    }
 		for (int i = 0; i < angerRespWeights.length; i++) {
 			String text = angerResponses[i];
-			Sentiment sentiment = UserResponseStage.parseText(text);
+			Sentiment sentiment = parseText(text);
 			angerRespWeights[i] = sentiment.getScore();		      
 	    }
 		for (int i = 0; i < normalCorrectRespWeights.length; i++) {
 			String text = normalCorrectResponses[i];
-			Sentiment sentiment = UserResponseStage.parseText(text);
+			Sentiment sentiment = parseText(text);
 			normalCorrectRespWeights[i] = sentiment.getScore();		      
 	    }
 		for (int i = 0; i < normalWrongRespWeights.length; i++) {
 			String text = normalWrongResponses[i];
-			Sentiment sentiment = UserResponseStage.parseText(text);
+			Sentiment sentiment = parseText(text);
 			normalWrongRespWeights[i] = sentiment.getScore();		      
 	    }
 		for (int i = 0; i < noRespWeights.length; i++) {
 			String text = noResponses[i];
-			Sentiment sentiment = UserResponseStage.parseText(text);
+			Sentiment sentiment = parseText(text);
 			noRespWeights[i] = sentiment.getScore();		      
 	    }
+	}
+	
+	private static Sentiment parseText(String text) throws Exception {
+		// Instantiates a client
+		try (LanguageServiceClient language = LanguageServiceClient.create()) {
+
+			Document doc = Document.newBuilder().setContent(text).setType(Type.PLAIN_TEXT).build();
+
+			// Detects the sentiment of the text
+			Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();
+			return sentiment;
+		}
 	}
 	
 	public static String determineBotResponse(double score, String type, boolean correct, String[] keywords) {
 		//Bot should have bank of responses in emergency
 		//Bot should respond happily when human happy
 		if(type == "anxiety") {
-			
+			return anxietyResponses[matchScoreToIndex(score, anxietyRespWeights)];
+		} else if (type == "anger") {
+			return angerResponses[matchScoreToIndex(score, angerRespWeights)];
+		} else if (type == "normal") {
+			if (correct) {
+				return normalCorrectResponses[matchScoreToIndex(score, normalCorrectRespWeights)];
+			} else {
+				return normalWrongResponses[matchScoreToIndex(score, normalWrongRespWeights)];
+			}
+		} else if (type == "no") {
+			return noResponses[matchScoreToIndex(score, noRespWeights)];
 		}
 		
 		return null;
