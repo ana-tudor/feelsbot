@@ -1,6 +1,11 @@
 import pygame
 import sys
 
+pygame.font.init() # you have to call this at the start, 
+                   # if you want to use this module.
+info_txt = pygame.font.SysFont('Comic Sans MS', 30)
+textsurface = info_txt.render('Left click to start video! Right click to stop video.', False, (0, 0, 0))
+
 def load_image(name):
     image = pygame.image.load(name)
     return image
