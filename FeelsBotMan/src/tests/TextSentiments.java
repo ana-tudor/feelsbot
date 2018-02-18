@@ -2,6 +2,8 @@ package tests;
 
 import com.google.cloud.language.v1.AnalyzeEntitiesRequest;
 import com.google.cloud.language.v1.AnalyzeEntitiesResponse;
+import com.google.cloud.language.v1.ClassifyTextRequest;
+import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.Document.Type;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -24,7 +26,8 @@ public class TextSentiments {
 			// Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();\
 
 			String[] texts = { "This is a cake", "This is a good cake", "This is a damn good cake",
-					"This is a damned cake", ":)", ":(", "Yes", "No" };
+					"This is a damned cake", "screwdriver", "There are more words in this sentece", 
+					"Let's try longer sample", "Absolutely not in any universe" };
 
 //			for (String text : texts) {
 //				Sentiment sentiment = parseText(text);
@@ -57,12 +60,17 @@ public class TextSentiments {
 			    		  .setDocument(doc)
 			    		  .build();
 			      AnalyzeEntitiesResponse response = language.analyzeEntities(request);
-			      
+			      ClassifyTextRequest request2 = ClassifyTextRequest.newBuilder()
+			    		     .setDocument(doc)
+			    		     .build();
+			    		   ClassifyTextResponse response2 = language.classifyText(request2);
 
 			      totalScore += sentiment.getScore();
 			      totalMag += sentiment.getMagnitude();
 			      keyWord = response.getEntitiesList().get(0).getName();
 			      System.out.println(totalScore + " " +  totalMag + " " +  keyWord);
+			      int ind = response.getEntitiesList().get(0).TYPE_FIELD_NUMBER;
+			      System.out.println(response2);
 			}
 		}
 	}
