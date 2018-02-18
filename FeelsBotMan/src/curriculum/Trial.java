@@ -11,7 +11,7 @@ public class Trial implements DiscreteTrialInterface {
 	}
 
 	@Override
-	public void run_prompt() {
+	public String run_prompt() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -84,7 +84,7 @@ public class BotResponseStage {
 	    }
 	}
 	
-	private static Sentiment parseText(String text) throws Exception {
+	public static Sentiment parseText(String text) throws Exception {
 		// Instantiates a client
 		try (LanguageServiceClient language = LanguageServiceClient.create()) {
 
