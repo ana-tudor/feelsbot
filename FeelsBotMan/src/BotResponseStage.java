@@ -11,8 +11,8 @@ public class BotResponseStage {
 
 	private static String[] anxietyResponses = {
 			"You don't need it right now. Play a game with me instead :)", 
-			"Let's not think about that right now.",
-			"It's okay. It's okay. You will be okay.",
+			"You look unhappy. Let's not think about that right now.",
+			"Everything will be okay, don't worry",
 			"Hey it's okay, look at this cute thing I can do!",
 			"Look at me. You are going to be okay. :)",
 			"I'm worried about you. Are you feeling okay?",
@@ -21,8 +21,8 @@ public class BotResponseStage {
 	
 	private static String[] angerResponses = {
 			"You don't need it right now. Play a game with me instead :)", 
-			"Let's not think about that right now.",
-			"It's okay. It's okay. You will be okay.",
+			"You look unhappy. Let's not think about that right now.",
+			"Everything will be okay, don't worry",
 			"Hey it's okay, look at this cute thing I can do!",
 			"Look at me. You are going to be okay. :)",
 			"I'm worried about you. Are you feeling okay?",
@@ -36,13 +36,13 @@ public class BotResponseStage {
 			"Perfect. On to the next one! :)"};
 	
 	private static String[] normalWrongResponses = {
-			"That's not right. Let's move on to the next exercise.",
+			"Oh no, that's not right. Let's try again.",
 			"Try again.",
 			"Try again, focus on me."};
 	
 	private static String[] noResponses = {
-			"What was that?", 
-			"Can you say that again?",
+			"What was that? I couldn't hear you.", 
+			"Say that again.",
 			"Try again please.",
 			"Try using your words :)"};
 	
@@ -82,6 +82,19 @@ public class BotResponseStage {
 			Sentiment sentiment = parseText(text);
 			noRespWeights[i] = sentiment.getScore();		      
 	    }
+		
+		printThing(anxietyRespWeights);
+		printThing(angerRespWeights);
+		printThing(normalCorrectRespWeights);
+		printThing(normalWrongRespWeights);
+		printThing(noRespWeights);
+	}
+	
+	private static void printThing(double[] arr) {
+		for (int i = 0; i < arr.length; i++) {
+			System.out.print(arr[i] + " ");
+		}
+		System.out.println();
 	}
 	
 	public static Sentiment parseText(String text) throws Exception {

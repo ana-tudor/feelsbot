@@ -25,7 +25,7 @@ public class CurriculumExpressWant {
 				null);
 		
 		Trial trial2 = new Trial("Do you like food?", 
-				"vague", 
+				"no", 
 				new ArrayList<String>(Arrays.asList("yes", "no")));
 		
 		Trial trial3 = new Trial("Are these foods?", 

@@ -41,13 +41,17 @@ public class Trial {
 	 * @return whether the response was what was expected
 	 */
 	public boolean determine_response_correctness(String keyWord, ArrayList<String> response) {
-		if(response == null) {
+		System.out.println("Response from Trial.java: " + response);
+		
+		if(response.size() == 0) {
 			return false;
 		} else if (keyWord == this.correctResponse) {
 			return true;
 		} else if (this.optionsDisplayed != null && this.optionsDisplayed.contains(keyWord)) {
 			return true;
 		} else if (response.contains(this.correctResponse)) {
+			return true;
+		} else if(in(this.correctResponse, response)) {
 			return true;
 		} else if (this.correctResponse == "vague") {
 			return true;
@@ -60,8 +64,17 @@ public class Trial {
 	 * Pauses thread for some amount of time before the next trial begins
 	 * @throws InterruptedException 
 	 */
-	public void pause(long time) throws InterruptedException {
+	public void pause(double time) throws InterruptedException {
 		Thread.sleep(10 * 1000);
+	}
+	
+	private boolean in(String element, ArrayList<String> set) {
+		for(String str:set) {
+			if (str.contains(element)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
