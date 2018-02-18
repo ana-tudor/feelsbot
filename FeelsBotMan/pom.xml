@@ -17,6 +17,23 @@
     </plugins>
     </pluginManagement>
 
+    <plugins>
+    	<plugin>
+    		<groupId>org.codehaus.mojo</groupId>
+    		<artifactId>exec-maven-plugin</artifactId>
+    		<version>1.2.1</version>
+    		<executions>
+				<execution>
+					<goals>
+						<goal>java</goal>
+					</goals>
+				</execution>
+			</executions>
+			<configuration>
+				<mainClass>com.amazonaws.demos.polly.PollyDemo</mainClass>
+			</configuration>
+    	</plugin>
+    </plugins>
   </build>
   <dependencies>
   	<dependency>
@@ -53,6 +70,16 @@
   		<groupId>com.ibm.watson.developer_cloud</groupId>
   		<artifactId>java-sdk</artifactId>
   		<version>4.1.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.amazonaws</groupId>
+  		<artifactId>aws-java-sdk-polly</artifactId>
+  		<version>1.11.77</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.googlecode.soundlibs</groupId>
+  		<artifactId>jlayer</artifactId>
+  		<version>1.0.1-1</version>
   	</dependency>
   </dependencies>
 </project>

@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
@@ -24,10 +25,6 @@ import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.websocket.BaseRecognizeCallback;
 
 public class UserResponseStage {
-
-	public static void main(String[] args) {
-
-	}
 
 	public static ArrayList<SpeechResults> collectUserSpeechResponse(long time) throws LineUnavailableException, InterruptedException {
 		/* Collect audio response and convert to text string */
@@ -60,7 +57,7 @@ public class UserResponseStage {
 		
 		RecognizeOptions options = new RecognizeOptions.Builder()
 		  .interimResults(true)
-		  .inactivityTimeout(5) // use this to stop listening when the speaker pauses, i.e. for 5s
+		  .inactivityTimeout(2) // use this to stop listening when the speaker pauses, i.e. for 5s
 		  .contentType(HttpMediaType.AUDIO_RAW + "; rate=" + sampleRate)
 		  .build();
 
@@ -68,7 +65,7 @@ public class UserResponseStage {
 			  @Override
 			  public void onTranscription(SpeechResults speechResults) {
 				results.add(speechResults);
-			    System.out.println(speechResults);
+//			    System.out.println(speechResults);
 			  }
 			});
 
@@ -94,6 +91,7 @@ public class UserResponseStage {
 		
 	}
 	
+	//Also identify key words!
 	public static double[] evaluateUserSpeechResponse(ArrayList<SpeechResults> results) throws Exception {
 		String[] stringResults = new String[results.size()];
 		
@@ -112,9 +110,12 @@ public class UserResponseStage {
 		      totalScore += sentiment.getScore();
 		      totalMag += sentiment.getMagnitude();
 	    }
+		//modify return
 		double[] ret = {totalScore/((double)stringResults.length), totalMag/((double)stringResults.length)};
 		return ret;
 	}
+	
+	//Determine response type
 	
 	public static Sentiment parseText(String text) throws Exception {
 		// Instantiates a client
@@ -145,7 +146,7 @@ public class UserResponseStage {
 		BufferedImage image = webcam.getImage();
 		
 		try {
-			ImageIO.write(image,  "jpg", new File("test.jpg"));
+			ImageIO.write(image, "jpg", new File("test.jpg"));
 		
 		}
 		catch (IOException e) {
@@ -168,7 +169,5 @@ public class UserResponseStage {
 		
 	}
 	
-	public static void determineBotResponse() {
-		
-	}
+	
 }
