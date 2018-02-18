@@ -23,9 +23,9 @@ import subprocess
 
 cap = cv2.VideoCapture(0)
 
-ret, picFrame = cap.capture()
+ret, picFrame = cap.read()
 cv2.imwrite("/Users/rebeccazeng/Desktop/Projects/feelsbot/FeelsBotMan/src/pics/img"+str(time.time())+".png", picFrame)
-cap.close()
+# cap.close()
 ret = cap.set(3,640)
 ret = cap.set(4,360)
 
