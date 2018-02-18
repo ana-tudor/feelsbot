@@ -45,7 +45,7 @@ public class Trial {
 			return false;
 		} else if (keyWord == this.correctResponse) {
 			return true;
-		} else if (this.optionsDisplayed.contains(keyWord)) {
+		} else if (this.optionsDisplayed != null && this.optionsDisplayed.contains(keyWord)) {
 			return true;
 		} else if (response.contains(this.correctResponse)) {
 			return true;

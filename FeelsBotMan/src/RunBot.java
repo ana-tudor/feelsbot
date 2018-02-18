@@ -1,14 +1,14 @@
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.*;
-import java.io.*;
+import java.lang.Process;
+
 
 import javax.sound.sampled.LineUnavailableException;
-
-import com.google.cloud.language.v1beta2.Sentiment;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 
 import curriculum.CurriculumExpressWant;
 import curriculum.Trial;
@@ -18,15 +18,22 @@ public class RunBot {
 	
 	// Set file path for bot speech text file
 	public static final String FILENAME = "bot_speech.txt";
-	public static final String face_analysis_txt = "face_analysis.txt";
+	public static final String face_analysis_txt = "target/face_analysis.txt";
+	public static final int response_time = 10;
+	
 	
 	// [ START MAIN() ]
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		/* Write actual description here at some point */
 		
 		// Instantiate Curriculum object and get list of Trials
-		Curriculum curriculum = new Curriculum();
+		CurriculumExpressWant curriculum = new CurriculumExpressWant();
 		ArrayList<Trial> trials = curriculum.getTrialList();
+		
+		Runtime rt = Runtime.getRuntime();
+		Process pr = rt.exec("python ui.py");
+		
+		
 		
 		// set t_0 as the absolute time in seconds when the program is first initiated
 		long t_0 = time(); 
@@ -37,12 +44,18 @@ public class RunBot {
 			String prompt = trial.run_prompt();
 			writeBotSpeech(prompt);
 			
+
+			
+			ArrayList<String> options = trial.get_antecedent();
+			//!!!write options to file for button access
+			System.out.println(options + "\n");
+			
 			// Now that prompt has been shown to user, make call to audio transcription
 			// and video transcription
 			
-			ArrayList<SpeechResults> speech_results = null;
+			ArrayList<String> speech_results = null;
 			try {
-				speech_results = UserResponseStage.collectUserSpeechResponse(time());
+				speech_results = UserResponseStage.collectUserSpeechResponse(response_time);
 
 			} catch (LineUnavailableException line) {
 				line.getStackTrace();
@@ -51,28 +64,33 @@ public class RunBot {
 			}
 			
 			// get analysis of user's sentiments (based on text)
-			ArrayList<Object> user_response = null;
+			ArrayList<Object> user_sentiment = null;
 			try {
-				user_response = UserResponseStage.evaluateUserSpeechResponse(speech_results);
+				user_sentiment = UserResponseStage.evaluateUserSpeechResponse(speech_results);
 			} catch (Exception e) {
-				e.getStackTrace();
+				System.out.println(e.getStackTrace());
 			}
 			
 			// get analysis of user's facial expressions
-			float[] expressions = readFacialAnalysisScores(face_analysis_txt);
+			double[] expressions = readFacialAnalysisScores(face_analysis_txt);
 			
 			// determine whether normal protocol can continue, or if special protocols (anger, anxiety) must be activated
 			String response_type = whichProtocol(expressions, speech_results);
 			
-			// take weighted average of facial expression scores and text analysis scores to get overall sentiment score
-			float score = reconcileScore(expressions, textSentiments(user_response));
+			System.out.println(user_sentiment);
 			
+			// take weighted average of facial expression scores and text analysis scores to get overall sentiment score
+			double score = reconcileScore(expressions, (double)user_sentiment.get(0));
+			
+			
+			boolean correct = trial.determine_response_correctness((String)user_sentiment.get(2), speech_results);
 			
 			
 			
 			
 			// determine bot's appropriate response
-			String response = BotResponseStage.determineBotResponse(score, response_type, correct, keywords);
+			String response = BotResponseStage.determineBotResponse(score, response_type, correct);
+			System.out.println(response);
 			
 		}
 		
@@ -121,39 +139,43 @@ public class RunBot {
 	// [ /END WRITEBOTSPEECH ]
 	
 	// [ START FACIALANALYSIS ]
-	public static ArrayList<Float> facialAnalysis() {
+	public static ArrayList<Double> facialAnalysis() {
 		/* Will eventually call vision.py detect_face() method; for now,
 		 * just returns something that will let the rest of the program run */
-		ArrayList<Float> values = new ArrayList<Float>();
-		values.add((float) 0.5);
-		values.add((float) 0.2);
-		values.add((float) 0.6);
+		ArrayList<Double> values = new ArrayList<Double>();
+		values.add((double) 0.5);
+		values.add((double) 0.2);
+		values.add((double) 0.6);
 		return values;
 	}
 	
 	// [ START TEXTSENTIMENTS ]
-	public static ArrayList<Float> textSentiments(ArrayList<Object> user_response) {
-		ArrayList<Float> scores = new ArrayList<Float>();
+	public static ArrayList<Double> textSentiments(ArrayList<Object> user_response) {
+		ArrayList<Double> scores = new ArrayList<Double>();
+		if (user_response.size() == 0) {
+			return null;
+		}
 		user_response.get(1);
-		scores.add((float) user_response.get(1));
-		scores.add((float) user_response.get(0));
+		scores.add((double) user_response.get(1));
+		scores.add((double) user_response.get(0));
 		return scores;
 	}
 	// [ /END TEXTSENTIMENTS ]
 	
 	
 	// [ START RECONCILESCORES ]
-	public static Float reconcileScore(float[] facial_scores, ArrayList<Float> textSentiments) {
-		float anger = (float) (facial_scores[0] * -1.8);
-		float happiness = facial_scores[1];
-		float surprise = (float) (facial_scores[2] * -1.5);
+	public static Double reconcileScore(double[] facial_scores, double text_score) {
+		if (facial_scores == null) {
+			return text_score;
+		}
+		double anger = (double) (facial_scores[0] * -1.8);
+		double happiness = facial_scores[1];
+		double surprise = (double) (facial_scores[2] * -1.5);
 		
-		float text_score = textSentiments.get(1);
-		
-		float score = (anger + happiness + surprise + text_score) / 4;
+		double score = (anger + happiness + surprise + text_score) / 4;
 		
 		if (Math.abs(score) > 1) {
-			return (float) 0.99;
+			return (double) 0.99;
 		}
 		return score;
 		
@@ -164,15 +186,19 @@ public class RunBot {
 	// [ /END RECONCILESCORES ]
 	
 	// [ START READ FACIAL ANALYSIS ]
-	public static float[] readFacialAnalysisScores(String pathName) {
-		/* Read in the floats from last line of facial_analysis.txt */
+	public static double[] readFacialAnalysisScores(String pathName) {
+		/* Read in the doubles from last line of facial_analysis.txt */
 		String line = null;
 		String last_line = null;
+		FileReader filereader;
+		BufferedReader bufferedReader;
+		
 		
 		try {
-			FileReader filereader = new FileReader(pathName);
+			filereader = new FileReader(pathName);
+			System.out.println("read file");
 			
-			BufferedReader bufferedReader = new BufferedReader(filereader);
+			bufferedReader = new BufferedReader(filereader);
 			
 			while ((line = bufferedReader.readLine()) != null) {
 				last_line = line;
@@ -185,14 +211,22 @@ public class RunBot {
 		} catch (IOException e) {
 			System.out.println("Error reading file");
 		}
-		String[] parts = last_line.substring(1,last_line.length()).split(",");
-		float[] scores = new float[parts.length-1];
-		for (int i = 0; i < parts.length-1; i++) {
-			float number = Float.parseFloat(parts[i]);
-			float rounded = (int) Math.round(number*1000) / 1000f;
-			scores[i] = rounded;
+		if (last_line != null) {
+			String[] parts = last_line.substring(1,last_line.length()).split(",");
+			double[] scores = new double[parts.length-1];
+			for (int i = 0; i < parts.length-1; i++) {
+				double number = Double.parseDouble(parts[i]);
+				double rounded = (int) Math.round(number*1000) / 1000f;
+				scores[i] = rounded;
+				
+				return scores;
+			}
+		} else {
+			System.out.println("rip");
+			return null;
 		}
-		return scores;
+		return null;
+
 	}
 	// [ /END READ FACIAL ANALYSIS ]
 	
@@ -218,17 +252,27 @@ public class RunBot {
 		} catch (IOException e) {
 			System.out.println("Error reading file");
 		}
-		String[] words = last_line.substring(1,last_line.length()).split(",");
-		return words[words.length];
+		if (last_line != null) {
+			String[] words = last_line.substring(1,last_line.length()).split(",");
+			return words[words.length];
+		} else {
+			return "";
+		}
 	}
 	// [ /END READ FACIAL ANALYSIS KEYWORD ]
 	
 	// [ START WHICH PROTOCOL ]
-	public static String whichProtocol(float[] expressions, ArrayList<SpeechResults> speech_results) {
-		float anger = expressions[0];
-		float anxiety = expressions[2];
-		float threshold = (float) 0.6;
-		if (speech_results.length < 3) {
+	public static String whichProtocol(double[] expressions, ArrayList<String> speech_results) {
+		if (expressions == null) {
+			if (speech_results.size() == 0) {
+				return "no";
+			}
+			return "normal"; 
+		}
+		double anger = expressions[0];
+		double anxiety = expressions[2];
+		double threshold = (double) 0.6;
+		if (speech_results.size() == 0) {
 			return "no";
 		} else if (anger > threshold && anger > anxiety) {
 			return "anger";

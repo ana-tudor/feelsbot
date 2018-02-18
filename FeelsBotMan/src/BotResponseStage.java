@@ -96,7 +96,7 @@ public class BotResponseStage {
 		}
 	}
 	
-	public static String determineBotResponse(double score, String type, boolean correct, String[] keywords) {
+	public static String determineBotResponse(double score, String type, boolean correct) {
 		//Bot should have bank of responses in emergency
 		//Bot should respond happily when human happy
 		if(type == "anxiety") {

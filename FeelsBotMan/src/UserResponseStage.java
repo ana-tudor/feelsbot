@@ -34,7 +34,7 @@ public class UserResponseStage {
 	 * @param time - hard timeout on collecting response
 	 * @return - list of sentences spoken
 	 */
-	public static ArrayList<SpeechResults> collectUserSpeechResponse(long time)
+	public static ArrayList<String> collectUserSpeechResponse(long time)
 			throws LineUnavailableException, InterruptedException {
 		/* Collect audio response and convert to text string */
 		SpeechToText service = new SpeechToText();
@@ -69,7 +69,7 @@ public class UserResponseStage {
 			@Override
 			public void onTranscription(SpeechResults speechResults) {
 				results.add(speechResults);
-				// System.out.println(speechResults);
+//				 System.out.println(speechResults);
 			}
 		});
 
@@ -91,8 +91,14 @@ public class UserResponseStage {
 				i--;
 			}
 		}
+		
+		ArrayList<String> stringResults = new ArrayList<String>(results.size());
 
-		return results;
+		for (int i = 0; i < results.size(); i++) {
+			stringResults.add(results.get(i).getResults().get(0).getAlternatives().get(0).getTranscript());
+		}
+
+		return stringResults;
 
 	}
 
@@ -103,20 +109,16 @@ public class UserResponseStage {
 	 * @param results - results from collecting the user response
 	 * @return average response score, magnitude, and most recent keyword
 	 */
-	public static ArrayList<Object> evaluateUserSpeechResponse(ArrayList<SpeechResults> results) throws Exception {
-		String[] stringResults = new String[results.size()];
-
-		for (int i = 0; i < results.size(); i++) {
-			stringResults[i] = results.get(i).getResults().get(0).getAlternatives().get(0).getTranscript();
-		}
-
+	public static ArrayList<Object> evaluateUserSpeechResponse(ArrayList<String> results) throws Exception {
 		double totalScore = 0;
 		double totalMag = 0;
 		String keyWord = "";
+		
+		System.out.println("Results in UserResponse class:" + results);
 
-		for (String text : stringResults) {
-			try (LanguageServiceClient language = LanguageServiceClient.create()) {
-
+		for (String text : results) {
+			try {
+				LanguageServiceClient language = LanguageServiceClient.create();
 				Document doc = Document.newBuilder().setContent(text).setType(Type.PLAIN_TEXT).build();
 
 				// Detects the sentiment of the text
@@ -129,11 +131,15 @@ public class UserResponseStage {
 				totalMag += sentiment.getMagnitude();
 				keyWord = response.getEntitiesList().get(0).getName();
 
+			} catch (Exception e) {
+				System.out.println("file was not read. possibly bc null?");
+				System.out.println(results);
+				System.out.println(e + "\n");
 			}
 		}
 		ArrayList<Object> ret = new ArrayList<Object>();
-		ret.add(totalScore / ((double) stringResults.length));
-		ret.add(totalMag / ((double) stringResults.length));
+		ret.add(totalScore / ((double) results.size()));
+		ret.add(totalMag / ((double) results.size()));
 		ret.add(keyWord);
 		return ret;
 	}
