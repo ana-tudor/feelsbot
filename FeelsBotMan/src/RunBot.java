@@ -10,7 +10,7 @@ import javax.sound.sampled.LineUnavailableException;
 import com.google.cloud.language.v1beta2.Sentiment;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 
-import curriculum.Curriculum;
+import curriculum.CurriculumExpressWant;
 import curriculum.Trial;
 
 // [ START RUNBOT CLASS ]
