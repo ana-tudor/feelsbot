@@ -1,6 +1,9 @@
 import pygame
 import sys
 import time
+from PIL import Image 
+import glob
+
 
 pygame.init() # you have to call this at the start, 
                    # if you want to use this module.
@@ -9,6 +12,16 @@ clock = pygame.time.Clock()
 
 # bot_surface = pygame.surface.Surface(500, 500)
 
+# [text]
+black, white = (0, 0, 0), (255, 255, 255)
+
+# initialize font
+font1 = pygame.font.SysFont("monospace", 25)
+# render font
+def captions(label):
+    caption_returned = font1.render(label, True, black)
+    # screen.blit(caption, (100,100))
+    return caption_returned
 
 # [sprite]
 class TestSprite(pygame.sprite.Sprite):
@@ -16,16 +29,24 @@ class TestSprite(pygame.sprite.Sprite):
         super(TestSprite, self).__init__()
 
         self.images = []
-        self.images.append(pygame.image.load('bears/bear0.png'))
+        for filename in glob.glob('bears2/*.PNG'): #assuming png
+            img = Image.open(filename)
+            print("does this work")
+            surface = pygame.image.load(filename)
+            print("does this now work")
+            self.images.append(surface)
+            print("hi")
+        # self.images.append(pygame.image.load(img))
         self.images.append(pygame.image.load('bears/bear1.png'))
-        self.images.append(pygame.image.load('bears/bear2.png'))
-        self.images.append(pygame.image.load('bears/bear3.png'))
-        self.images.append(pygame.image.load('bears/bear4.png'))
-        self.images.append(pygame.image.load('bears/bear5.png'))
+        # self.images.append(pygame.image.load('bears/bear2.png'))
+        # self.images.append(pygame.image.load('bears/bear3.png'))
+        # self.images.append(pygame.image.load('bears/bear4.png'))
+        # self.images.append(pygame.image.load('bears/bear5.png'))
 
         self.index = 0
         self.image = self.images[self.index]
         self.rect = pygame.Rect(5, 5, 64, 64)
+        self.direction = 1
 
     def update(self):
         '''This method iterates through the elements inside self.images and 
@@ -34,7 +55,10 @@ class TestSprite(pygame.sprite.Sprite):
         # if self.index >= len(self.images):
         #     self.index = 0
         self.image = self.images[self.index]
-        self.index = (self.index + 1) % 6
+        self.index = self.direction + self.index
+        if self.index >= len(self.images) or self.index < 0:
+            self.direction = self.direction * -1
+            self.index += self.direction
 
 command_list = []
 def write(command):
@@ -45,58 +69,52 @@ def write(command):
     for each_command in command_list:
         start_or_end.write("%s\n" % each_command)
 
-# [text]
-black, white = (0, 0, 0), (255, 255, 255)
-
-# initialize font
-font1 = pygame.font.SysFont("monospace", 25)
-# render font
-def captions(label):
-    caption = font1.render(label, True, white)
-    # screen.blit(caption, (100,100))
-    return caption
 
 def main():
     pygame.init()
-
-    my_sprite = TestSprite()
-    my_group = pygame.sprite.Group(my_sprite)
+    my_bear = TestSprite()
+    bears_group = pygame.sprite.Group(my_bear)
     vid_on = False
-    caption_list = []
+    # initial caption
+    caption = captions("hello world")
 
-    def update_screen():
-        my_group.update()
-        my_group.draw(screen)
+    def update_screen(caption_blit):
+        bears_group.update()
+        bears_group.draw(screen)
+        # pygame.display.flip()
+        screen.blit(caption_blit, (100,100))
         pygame.display.flip()
 
     # start with a picture of the bear
-    update_screen()
+    update_screen(caption)
+    started = 0;
 
     while True:
-        event = pygame.event.wait()
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit(0)
-        if pygame.mouse.get_pressed()[0] and vid_on == False:
+        if not started:
+            event = pygame.event.wait()
+            if pygame.mouse.get_pressed()[0] and vid_on == False:
             # this is when we start taking in video
-            update_screen()
-            print("this is when the video feed starts")
-            write("start")
-            caption_list.append(captions("hello world"))
-            vid_on = True
-        if pygame.mouse.get_pressed()[2] and vid_on == True:
-            # this is when we need to stop taking in video  
-            update_screen()          
-            print("this is when the video feed ends")
-            write("end")
-            caption_list.append(captions("hi world"))
+            # update_screen()
+            # print("this is when the video feed starts")
+                write("start") # this writes to a txt file for the Java
+                caption = captions("started recording")
+                update_screen(caption)
+                started = 1;
+
             vid_on = False  
-        for caption in caption_list:
-            pygame.display.flip()
-            screen.blit(caption, (100,100))
-        clock.tick(160)
-        # Calling the 'my_group.update' function calls the 'update' function of all 
-        # its member sprites. Calling the 'my_group.draw' function uses the 'image'
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        pygame.display.flip()
+        update_screen(caption)
+
+
+
+        clock.tick(1600)
+        pygame.time.wait(100)
+        # Calling the 'bears_group.update' function calls the 'update' function of all 
+        # its member sprites. Calling the 'bears_group.draw' function uses the 'image'
         # and 'rect' attributes of its member sprites to draw the sprite.
 
 
