@@ -41,7 +41,7 @@ export default class App extends Component<Props> {
   }
 
   handleSubmit() {
-    nodejs.channel.send(this.state.text);
+    nodejs.channel.post('analyze', this.state.text);
     this.refs.form.clear();
     this.setState({
       text: "",
