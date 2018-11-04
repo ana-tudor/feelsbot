@@ -7,8 +7,9 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Button} from 'react-native';
+import {Platform, StyleSheet, Text, View, Button, TextInput} from 'react-native';
 import nodejs from 'nodejs-mobile-react-native';
+import Bear from "./Bear";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -20,17 +21,33 @@ const instructions = Platform.select({
 type Props = {};
 
 export default class App extends Component<Props> {
+  constructor(props) {
+    super(props)
+    this.state = {
+      text: "",
+    }
+  }
+
   componentWillMount()
   {
     nodejs.start('main.js');
     nodejs.channel.addListener(
       'message',
       (msg) => {
-        alert('From node: ' + msg + "whatttt");
+        alert('From node: ' + msg);
       },
       this 
     );
   }
+
+  handleSubmit() {
+    nodejs.channel.send(this.state.text);
+    this.refs.form.clear();
+    this.setState({
+      text: "",
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -38,8 +55,17 @@ export default class App extends Component<Props> {
         <Text style={styles.instructions}>To get started, edit App.js</Text>
         <Text style={styles.instructions}>{instructions}</Text>
         <Button title="Message Node"
-          onPress={() => nodejs.channel.send('A kjnjk!')}
+          onPress={() => nodejs.channel.send('A message!')}
         />
+        <TextInput
+          ref="form"
+          style={{height: 40, width: 200}}
+          placeholder="Echo"
+          onChangeText={(text) => this.setState({text})}
+          blurOnSubmit={true}
+          onSubmitEditing={() => this.handleSubmit()}
+        />
+        <Bear></Bear>
       </View>
     );
   }
@@ -50,7 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#ffdb98',
   },
   welcome: {
     fontSize: 20,

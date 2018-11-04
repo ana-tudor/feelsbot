@@ -1,12 +1,14 @@
 {
-  "//": 
-  ["Rename this sample file to package.json to use on your project."
-  , "The sample-package.json file will be overwritten in updates/reinstalls."
-  ],
-  "name": "sample-node-project",
+  "name": "calhacks5",
   "version": "0.0.1",
   "description": "node part of the project",
   "main": "main.js",
-  "author": "janeasystems",
-  "license": ""
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "hoaiandang",
+  "license": "",
+  "dependencies": {
+    "watson-developer-cloud": "^3.13.0"
+  }
 }
